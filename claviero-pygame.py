@@ -14,8 +14,6 @@ import codecs
 import time
 import json
 
-" -keycapfont-resultlinefont-writesamplefont-insectfont"
-
 def read_args ():
   parser = argparse.ArgumentParser ()
   pad = parser.add_argument
