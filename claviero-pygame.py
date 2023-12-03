@@ -39,7 +39,7 @@ def read_args ():
   pad ("--dontsave", action="store_true")
   pad ("--showmouse", action="store_true")
   pad ("--no_insects", action="store_true")
-  pad ("--no_inumbers", action="store_true")
+  pad ("--inumbers", action="store_true")
   pad ("--constspeed", action="store_true")
   pad ("-p", "--parolas", default="")
   args = parser.parse_args ()
@@ -254,7 +254,7 @@ def paint_insects (self):
     tme2 = tme1 - self.insecttime
     self.insectnow = self.insectnow + self.charw * (cpm(self.insectspeed) * tme2 / 60) % self.w
     self.insecttime = tme1
-    if args.no_inumbers:
+    if not args.inumbers:
       for i,color in enumerate (insects):
         xpt =  int ((self.insectnow + i*insectspace) % self.w)
         pygame.draw.rect (self.screen, color, [xpt, self.h + 78, 110, 7])
@@ -626,7 +626,7 @@ def handle_key_press (self, event):
     infolines_add_scores (self)
   elif ctrl and keyname == "n":
     print (f"Control-N pressed.")
-    args.no_inumbers = not args.no_inumbers
+    args.inumbers = not args.inumbers
   elif ctrl and keyname == "s":
     print ("Control-S pressed.")
     self.savecapture = 2
