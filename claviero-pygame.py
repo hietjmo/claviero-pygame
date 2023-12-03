@@ -1,6 +1,6 @@
 
 """
-python claviero-pygame.py --ordine /pmdrfwcuygj/tlsnvqeaoik/xbzhåöä,.-/
+python claviero-pygame.py --ordine /pmdrfwcuygj/tlsnvqeaoik/xbzhåöä,.-/ -i texts/morse-code-mnemonics-short.txt
 """
 
 import pygame
@@ -29,7 +29,7 @@ def read_args ():
   pad ("-sz4", "--insectfontsize", type=int, default=8)
   pad ("-sz5", "--resultfontsize", type=int, default=18)
   pad ("-sz6", "--hugefontsize", type=int, default=84)
-  pad ("-sz7", "--infoscreenfontsize", type=int, default=16)
+  pad ("-sz7", "--infoscreenfontsize", type=int, default=14)
   pad ("-ww", "--wrapwidth", type=int, default=75)
   pad ("-wpm1", "--lowerwpm", type=float, default=12.5)
   pad ("-wpm2", "--upperwpm", type=float, default=80)
@@ -39,6 +39,7 @@ def read_args ():
   pad ("--dontsave", action="store_true")
   pad ("--showmouse", action="store_true")
   pad ("--no_insects", action="store_true")
+  pad ("--no_inumbers", action="store_true")
   pad ("--constspeed", action="store_true")
   pad ("-p", "--parolas", default="")
   args = parser.parse_args ()
@@ -253,19 +254,24 @@ def paint_insects (self):
     tme2 = tme1 - self.insecttime
     self.insectnow = self.insectnow + self.charw * (cpm(self.insectspeed) * tme2 / 60) % self.w
     self.insecttime = tme1
-    for i,color in enumerate (insects):
-      xpt =  int ((self.insectnow + i*insectspace) % self.w)
-      pygame.draw.rect (self.screen, color, [xpt, self.h + 78, 30, 7])
-      img = self.insectfont.render (f"{self.insectspeed:.1f}",True,color)
-      rect = img.get_rect (bottomleft = (xpt+50, self.h + 85 + 1))
-      self.screen.blit (img, rect)
-      #self.screen.blit (img, (xpt+50, self.h + 77))
-      if xpt + 70 > self.w:
-        pygame.draw.rect (self.screen, color, [-(self.w - xpt), self.h + 78, 30, 7])
+    if args.no_inumbers:
+      for i,color in enumerate (insects):
+        xpt =  int ((self.insectnow + i*insectspace) % self.w)
+        pygame.draw.rect (self.screen, color, [xpt, self.h + 78, 110, 7])
+        if xpt + 110 > self.w:
+          pygame.draw.rect (self.screen, color, [-(self.w - xpt), self.h + 78, 110, 7])
+    else:
+      for i,color in enumerate (insects):
+        xpt =  int ((self.insectnow + i*insectspace) % self.w)
+        pygame.draw.rect (self.screen, color, [xpt, self.h + 78, 30, 7])
         img = self.insectfont.render (f"{self.insectspeed:.1f}",True,color)
-        #self.screen.blit (img, (-(self.w - xpt)+50, self.h + 77))
         rect = img.get_rect (bottomleft = (xpt+50, self.h + 85 + 1))
         self.screen.blit (img, rect)
+        if xpt + 110 > self.w:
+          pygame.draw.rect (self.screen, color, [-(self.w - xpt), self.h + 78, 30, 7])
+          img = self.insectfont.render (f"{self.insectspeed:.1f}",True,color)
+          rect = img.get_rect (bottomleft = (-(self.w - xpt)+50, self.h + 85 + 1))
+          self.screen.blit (img, rect)
 
 def draw_res (self):
   img = self.resultlinefont.render (self.resline,True,om ("white"))
@@ -291,9 +297,10 @@ def draw_txt (self,x,y,sample,gotright,gotwrong,show_arrow=False):
   img = self.writesamplefont.render (sample[1],True,om ("lightgrey"))
   self.screen.blit (img, (x,y))
 
-  img = self.writesamplefont.render (gotright,True,om ("white"))
-  self.screen.blit (img, (x,y+2*tsize))
-  x = x + img.get_width()
+  if gotright:
+    img = self.writesamplefont.render (gotright,True,om ("white"))
+    self.screen.blit (img, (x,y+2*tsize))
+    x = x + img.get_width()
 
   lft = sample[0] [len(gotright):]
   nxt = lft [:1]
@@ -310,7 +317,7 @@ def draw_txt (self,x,y,sample,gotright,gotwrong,show_arrow=False):
 
 def draw_infolines (self):
   for i,s in enumerate (self.infolines):
-    img = self.infolinefont.render (s,True,om ("grey"))
+    img = self.infolinefont.render (s,True,om ("lightgrey"))
     self.screen.blit (img, (20,int (25 + i*1.00*img.get_height())))
 
 def draw_screen (self):
@@ -372,9 +379,12 @@ def cpm (wpm):
 def cps (wpm):
   return 5.0 * wpm / 60
 
-def infolines_append (self,infoline):
+def infolines_append (self, infoline):
   self.infolines.append (infoline)
   self.infolines = self.infolines[-self.infolineslen:]
+
+def infolines_hr (self):
+  infolines_append (self, 56*"=")
 
 def load_json_files (self):
   try:
@@ -416,14 +426,14 @@ def load_json_files (self):
     self.order = ""
   self.usage = self.config ['usage']
   self.alltimekeys = self.config ['alltimekeys']
-  infolines_append (self,42 * "=")
+  infolines_hr (self)
 
 def init (self):
   pygame.init ()
   pygame.mouse.set_visible (args.showmouse)
   init_vars (self)
   load_json_files (self)
-  pygame.display.set_caption ("Claviero")
+  pygame.display.set_caption ("Claviero-pygame")
   create_order (self)
   self.w, self.h = 952,352
   screen_w, screen_h = self.w, self.h+85
@@ -486,7 +496,6 @@ def calc_speed (self,chars):
     pygame.time.set_timer (pygame.USEREVENT, 195)
     print ("Started.")
   self.total = chars - self.startkey 
-  wtot = self.alltimekeys + self.total
 
 def calc_cire (current,sample0):
   sams = same (current,sample0)
@@ -535,7 +544,6 @@ def add_key (self):
     c = self.current [-1:]
     if c and self.oldtot < self.total:
       self.keys.append ([now,c])
-      # print (len(self.keys),c)
       self.oldtot = self.total
     if self.gotwronglen == 0 and self.timeold:
       ad = (" " + self.current) [-2:]
@@ -567,6 +575,38 @@ def letter_shift (letter,shift):
     return letter.upper() if shift else letter.lower() 
   return letter
 
+def infolines_add_help (self):
+  m, s = divmod (self.usage, 60)
+  h, m = divmod (m, 60)
+  total = self.alltimekeys + self.total
+  for s in [
+    "Control-I: Toggle between info-screen and keymap image.",
+    "Control-S: Save captured key-presses.",
+    "Control-B: Show best scores.",
+    "Control-N: Toggle insectstyle.",
+    "Control-M: Toggle mouse visibility.",
+    "Control-H: Help",
+    "Control-X: Exit.", 
+    f"Total usage: {h} hours {m} minutes.",
+    f"Total keys: {total:_}".replace("_", " ")]:
+   infolines_append (self,s)
+  infolines_hr (self)
+
+def infolines_add_scores (self):
+  for i in range(29,-1,-1):
+    if len (self.scores) > i:
+      x,t,ers = self.scores [i]
+      dt = datetime.strptime(t,"%Y-%m-%d %H:%M:%S")
+      past1h = datetime.now() - timedelta(hours=1)
+      past24 = datetime.now() - timedelta(days=1)
+      past = ""
+      if dt > past24: past = "+"
+      if dt > past1h: past = "*"
+
+      infoline = f"{x:>5.1f} {cps(x):.1f} {t} {ers:.2f}% ({i+1}) {past}"
+      infolines_append (self,infoline)
+  infolines_hr (self)
+
 def handle_key_press (self, event):
   hw2 = event.scancode
   number = event.key
@@ -578,8 +618,26 @@ def handle_key_press (self, event):
     print ("Control-X pressed. Quitting.")
     do_quit (self)
   elif ctrl and keyname == "i":
+    print (f"Control-I pressed.")
     args.info = not args.info
-    print (f"Control-I pressed. Info-screen={args.info}")
+  elif ctrl and keyname == "b":
+    print (f"Control-B pressed.")
+    args.info = not args.info
+    infolines_add_scores (self)
+  elif ctrl and keyname == "n":
+    print (f"Control-N pressed.")
+    args.no_inumbers = not args.no_inumbers
+  elif ctrl and keyname == "s":
+    print ("Control-S pressed.")
+    self.savecapture = 2
+  elif ctrl and keyname == "m":
+    print (f"Control-M pressed.")
+    args.showmouse = not args.showmouse
+    pygame.mouse.set_visible (args.showmouse)
+  elif ctrl and keyname == "h":
+    print (f"Control-H pressed.")
+    args.info = True
+    infolines_add_help (self)
   elif keyname == " ":
     accept = True
     self.current += " "
