@@ -2,6 +2,12 @@
 
 ![screenshot-1.png](screenshot-1.png?raw=true)
 
+```
+# python claviero-pygame.py
+# pip install pygame
+```
+
+
 - **Control-I**: Toggle between info-screen and keymap image.
 - **Control-S**: Save captured key-presses.
 - **Control-B**: Show best scores.
@@ -11,7 +17,7 @@
 - **Control-X**: Exit.
 
 ```
-python claviero-pygame.py --ordine /pmdrfwcuygj/tlsnvqeaoik/xbzhåöä,.-/ -i texts/morse-code-mnemonics-short.txt
+# python claviero-pygame.py --ordine /pmdrfwcuygj/tlsnvqeaoik/xbzhåöä,.-/ -i texts/morse-code-mnemonics-short.txt
 
 pygame 1.9.6
 Hello from the pygame community. https://www.pygame.org/contribute.html
