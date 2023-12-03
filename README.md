@@ -2,13 +2,13 @@
 
 ![screenshot-1.png](screenshot-1.png?raw=true)
 
-- **Control-I**: Toggle between info-screen and keymap image.",
-- **Control-S**: Save captured key-presses.",
-- **Control-B**: Show best scores.",
-- **Control-N**: Toggle insectstyle.",
-- **Control-M**: Toggle mouse visibility.",
-- **Control-H**: Help",
-- **Control-X**: Exit.", 
+- **Control-I**: Toggle between info-screen and keymap image.
+- **Control-S**: Save captured key-presses.
+- **Control-B**: Show best scores.
+- **Control-N**: Toggle insectstyle.
+- **Control-M**: Toggle mouse visibility.
+- **Control-H**: Help
+- **Control-X**: Exit.
 
 ```
 python claviero-pygame.py --ordine /pmdrfwcuygj/tlsnvqeaoik/xbzhåöä,.-/ -i texts/morse-code-mnemonics-short.txt
