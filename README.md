@@ -13,7 +13,7 @@
 - **Control-B**: Show best scores.
 - **Control-N**: Toggle insectstyle.
 - **Control-M**: Toggle mouse visibility.
-- **Control-H**: Help
+- **Control-H**: Help.
 - **Control-X**: Exit.
 
 ```
