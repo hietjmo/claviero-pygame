@@ -1,6 +1,8 @@
 
 """
 python claviero-pygame.py --ordine /pmdrfwcuygj/tlsnvqeaoik/xbzhåöä,.-/ -i texts/morse-code-mnemonics-short.txt
+
+Tested on pygame 2.5.2
 """
 
 import pygame
@@ -51,7 +53,6 @@ class S:
   def __init__(self):
     self.data = []
 
-print ("-order", args.ordine)
 
 openmojipalette = {
   'blue': '#92d3f5', 'blueshadow': '#61b2e4', 'red': '#ea5a47',
@@ -134,6 +135,7 @@ def create_order (self):
   #   order = self.order
   if args.ordine:
     order = args.ordine
+  print ("-order", order)
   ao = order.split(order[0])
   claves = (
     # number row:
@@ -610,7 +612,7 @@ def infolines_add_scores (self):
 def handle_key_press (self, event):
   hw2 = event.scancode
   number = event.key
-  keyname = chr (number)
+  keyname = event.unicode
   ctrl = event.mod & pygame.KMOD_CTRL
   shift = event.mod & pygame.KMOD_SHIFT
   accept = False
@@ -644,8 +646,10 @@ def handle_key_press (self, event):
   elif number == pygame.K_BACKSPACE :
     accept = True
     self.current = self.current [:-1]
-  elif hw2 in hardware_codes:
-    letter = self.keyst [hw2]
+  # elif hw2 in hardware_codes:
+  else:
+    letter = keyname
+    # letter = self.keyst [hw2]
     accept = letter != ''
     if letter in self.special and shift:
       letter = self.special [letter]
