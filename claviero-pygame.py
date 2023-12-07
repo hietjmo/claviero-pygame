@@ -1,8 +1,9 @@
 
 """
-python claviero-pygame.py --ordine /pmdrfwcuygj/tlsnvqeaoik/xbzhåöä,.-/ -i texts/morse-code-mnemonics-short.txt
+# python claviero-pygame.py -order /pmdrfwcuygj/tlsnvqeaoik/xbzhåöä,.-/ -i texts/morse-code-mnemonics-short.txt
 
-Tested on pygame 2.5.2
+for pygame 2.5.2
+# pip install pygame==2.5.2
 """
 
 import pygame
@@ -20,6 +21,8 @@ def read_args ():
   parser = argparse.ArgumentParser ()
   pad = parser.add_argument
   pad ("-i", "--infile", default="texts/tao-te-king.txt")
+  pad ("-order", default="")
+  pad ("-scramble", default="")
   pad ("-ln", "--line", type=int, default=-1)
   pad ("-font1", "--keycapfont", default="fonts/Arial_Bold.ttf")
   pad ("-font2", "--writesamplefont", default="fonts/DejaVuSansMono.ttf")
@@ -36,7 +39,6 @@ def read_args ():
   pad ("-wpm1", "--lowerwpm", type=float, default=12.5)
   pad ("-wpm2", "--upperwpm", type=float, default=80)
   pad ("--outlier", type=float, default=5.0)
-  pad ("-order", "--ordine", default="")
   pad ("--info", action="store_true")
   pad ("--dontsave", action="store_true")
   pad ("--showmouse", action="store_true")
@@ -53,6 +55,38 @@ class S:
   def __init__(self):
     self.data = []
 
+pygame_keys = {
+  pygame.K_a:     'a',       
+  pygame.K_b:     'b',       
+  pygame.K_c:     'c',       
+  pygame.K_d:     'd',       
+  pygame.K_e:     'e',       
+  pygame.K_f:     'f',       
+  pygame.K_g:     'g',       
+  pygame.K_h:     'h',       
+  pygame.K_i:     'i',       
+  pygame.K_j:     'j',       
+  pygame.K_k:     'k',       
+  pygame.K_l:     'l',       
+  pygame.K_m:     'm',       
+  pygame.K_n:     'n',       
+  pygame.K_o:     'o',       
+  pygame.K_p:     'p',       
+  pygame.K_q:     'q',       
+  pygame.K_r:     'r',       
+  pygame.K_s:     's',       
+  pygame.K_t:     't',       
+  pygame.K_u:     'u',       
+  pygame.K_v:     'v',       
+  pygame.K_w:     'w',       
+  pygame.K_x:     'x',       
+  pygame.K_y:     'y',       
+  pygame.K_z:     'z',       
+  pygame.K_COMMA: ',',       
+  pygame.K_MINUS: '-',       
+  pygame.K_PERIOD:'.',}       
+
+pygame_keys2 = {b:a for (a,b) in pygame_keys.items()}
 
 openmojipalette = {
   'blue': '#92d3f5', 'blueshadow': '#61b2e4', 'red': '#ea5a47',
@@ -131,10 +165,13 @@ w,h = 60,60
 
 def create_order (self):
   order = "/qwertyuiopå/asdfghjklöä/zxcvbnm,.-/"
-  # if self.order:
-  #   order = self.order
-  if args.ordine:
-    order = args.ordine
+  if self.order:
+    order = self.order
+  if args.order:
+    order = args.order
+  self.order = order
+  if args.scramble:
+    order = args.scramble
   print ("-order", order)
   ao = order.split(order[0])
   claves = (
@@ -611,45 +648,44 @@ def infolines_add_scores (self):
 
 def handle_key_press (self, event):
   hw2 = event.scancode
-  number = event.key
+  key = event.key
   keyname = event.unicode
   ctrl = event.mod & pygame.KMOD_CTRL
   shift = event.mod & pygame.KMOD_SHIFT
   accept = False
-  if ctrl and keyname == "x":
+  if ctrl and key == pygame.K_x:
     print ("Control-X pressed. Quitting.")
     do_quit (self)
-  elif ctrl and keyname == "i":
+  elif ctrl and key == pygame.K_i:
     print (f"Control-I pressed.")
     args.info = not args.info
-  elif ctrl and keyname == "b":
+  elif ctrl and key == pygame.K_b:
     print (f"Control-B pressed.")
     args.info = not args.info
     infolines_add_scores (self)
-  elif ctrl and keyname == "n":
+  elif ctrl and key == pygame.K_n:
     print (f"Control-N pressed.")
     args.inumbers = not args.inumbers
-  elif ctrl and keyname == "s":
+  elif ctrl and key == pygame.K_s:
     print ("Control-S pressed.")
     self.savecapture = 2
-  elif ctrl and keyname == "m":
+  elif ctrl and key == pygame.K_m:
     print (f"Control-M pressed.")
     args.showmouse = not args.showmouse
     pygame.mouse.set_visible (args.showmouse)
-  elif ctrl and keyname == "h":
+  elif ctrl and key == pygame.K_h:
     print (f"Control-H pressed.")
     args.info = True
     infolines_add_help (self)
-  elif keyname == " ":
+  elif key == pygame.K_SPACE:
     accept = True
     self.current += " "
-  elif number == pygame.K_BACKSPACE :
+  elif key == pygame.K_BACKSPACE :
     accept = True
     self.current = self.current [:-1]
   # elif hw2 in hardware_codes:
-  else:
+  elif keyname:
     letter = keyname
-    # letter = self.keyst [hw2]
     accept = letter != ''
     if letter in self.special and shift:
       letter = self.special [letter]
@@ -703,9 +739,9 @@ def do_quit (self):
   if not args.dontsave:
     self.capture.sort (reverse=True)
     self.capture = self.capture[:30+self.savecapture]
-    json.dump (self.capture, open("capture.json","w"))
-    json.dump (self.config, open("config.json","w"))
-    json.dump (self.presses, open("presses.json","w"))
+    json.dump (self.capture, open ("capture.json","w"))
+    json.dump (self.config,  open ("config.json","w"))
+    json.dump (self.presses, open ("presses.json","w"))
     t = []
     for score,day,errs in self.scores:
       t.append (F"{score:.1f}\t{day}\t{errs:.2f}")
@@ -748,5 +784,5 @@ while True:
       take_timeout (self)
   draw_screen (self)
   pygame.display.update ()
-  self.clock.tick (20)
+  self.clock.tick (18)
 
