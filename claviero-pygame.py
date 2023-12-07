@@ -2,6 +2,8 @@
 """
 # python claviero-pygame.py -order /pmdrfwcuygj/tlsnvqeaoik/xbzhåöä,.-/ -i texts/morse-code-mnemonics-short.txt
 
+/qwertyuiopå/asdfghjklöä/zxcvbnm,.-/
+
 for pygame 2.5.2
 # pip install pygame==2.5.2
 """
@@ -82,11 +84,15 @@ pygame_keys = {
   pygame.K_x:     'x',       
   pygame.K_y:     'y',       
   pygame.K_z:     'z',       
+  228: 'ä',
+  246: 'ö',
+  229: 'å',
   pygame.K_COMMA: ',',       
   pygame.K_MINUS: '-',       
   pygame.K_PERIOD:'.',}       
 
 pygame_keys2 = {b:a for (a,b) in pygame_keys.items()}
+scrambled = dict (zip (args.order,args.scramble))
 
 openmojipalette = {
   'blue': '#92d3f5', 'blueshadow': '#61b2e4', 'red': '#ea5a47',
@@ -650,6 +656,18 @@ def handle_key_press (self, event):
   hw2 = event.scancode
   key = event.key
   keyname = event.unicode
+  # print ("hw2,key,keyname",hw2,key,keyname)
+  if not keyname and 128 < key < 256:
+    keyname = chr (key)
+  if args.scramble:
+    if key in pygame_keys:
+      pg = pygame_keys[key]
+      if pg in scrambled:
+        keyname = scrambled[pg]
+        if scrambled[pg] in pygame_keys2:
+          key = pygame_keys2[scrambled[pg]]
+  # print ("hw2,key,keyname",hw2,key,keyname)
+  # print ()
   ctrl = event.mod & pygame.KMOD_CTRL
   shift = event.mod & pygame.KMOD_SHIFT
   accept = False
