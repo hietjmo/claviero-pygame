@@ -9,7 +9,6 @@ for pygame 2.5.2
 """
 
 import pygame
-from sys import exit
 from itertools import accumulate
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -395,6 +394,7 @@ def draw_screen (self):
            (x+25+cir*5, y+25+cir*5, w-cir*10, h-cir*10))
 
 def init_vars (self):
+  self.running = True
   self.info = False
   self.resline, self.oldresline = "",""
   self.current, self.old = "",""
@@ -647,7 +647,6 @@ def infolines_add_scores (self):
       past = ""
       if dt > past24: past = "+"
       if dt > past1h: past = "*"
-
       infoline = f"{x:>5.1f} {cps(x):.1f} {t} {ers:.2f}% ({i+1}) {past}"
       infolines_append (self,infoline)
   infolines_hr (self)
@@ -701,7 +700,6 @@ def handle_key_press (self, event):
   elif key == pygame.K_BACKSPACE :
     accept = True
     self.current = self.current [:-1]
-  # elif hw2 in hardware_codes:
   elif keyname:
     letter = keyname
     accept = letter != ''
@@ -787,12 +785,11 @@ def do_quit (self):
   h, m = divmod (m, 60)
   print ("Total usage:", h, "hours", m, "minutes.")
   print (f"Total keys: {self.alltimekeys:_}".replace("_", " "))
-  pygame.quit ()
-  exit ()
+  self.running = False
 
 self = S ()
 init (self)
-while True:
+while self.running:
   for event in pygame.event.get ():
     if event.type == pygame.QUIT:
       do_quit (self)
