@@ -682,7 +682,15 @@ def handle_key_press (self, event):
     infolines_add_scores (self)
   elif ctrl and key == pygame.K_n:
     print (f"Control-N pressed.")
-    args.inumbers = not args.inumbers
+    if args.inumbers and args.no_insects:
+      args.inumbers = False
+      args.no_insects = False
+    elif (not args.inumbers) and (not args.no_insects):
+      args.inumbers = True
+      args.no_insects = False
+    elif args.inumbers and (not args.no_insects):
+      args.inumbers = True
+      args.no_insects = True
   elif ctrl and key == pygame.K_s:
     print ("Control-S pressed.")
     self.savecapture = 2
