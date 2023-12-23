@@ -17,6 +17,7 @@ import textwrap
 import codecs
 import time
 import json
+import re
 
 def read_args ():
   parser = argparse.ArgumentParser ()
@@ -218,14 +219,14 @@ def wrap_text (teksto):
   teksto = [s + ("" if s.endswith("-") else " ") for s in teksto]
   return teksto
 
-def load_teksto ():
+def load_text ():
   f = codecs.open (args.infile, encoding='utf-8', errors='replace')
-  teksto = f.read().strip()
+  text = f.read().strip()
   f.close ()
-  rpl = ("\n"," "),("  "," "),("  "," "),
+  rpl = (r"\n"," "),("  +"," "),
   for a,b in rpl:
-    teksto = teksto.replace (a,b)
-  return teksto
+    text = re.sub (a,b,text)
+  return text
 
 def hex_to_rgb (hex):
   h = hex.lstrip ('#')
@@ -502,7 +503,7 @@ def init (self):
   if args.parolas:
     self.text = 50 * (args.parolas + " ")
   else:
-    self.text = load_teksto ()
+    self.text = load_text ()
   self.text = wrap_text (self.text)
   self.wrappoints = list (accumulate([0]+[len (s) for s in self.text]))
   if self.line >= len (self.text):
