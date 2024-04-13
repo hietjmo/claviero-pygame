@@ -9,6 +9,7 @@ for pygame 2.5.2
 """
 
 import pygame
+import random
 from itertools import accumulate
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -18,6 +19,7 @@ import codecs
 import time
 import json
 import re
+import os
 
 def read_args ():
   parser = argparse.ArgumentParser ()
@@ -37,6 +39,11 @@ def read_args ():
   pad ("-sz5", "--resultfontsize", type=int, default=18)
   pad ("-sz6", "--hugefontsize", type=int, default=84)
   pad ("-sz7", "--infoscreenfontsize", type=int, default=14)
+  pad ("-wx", "--window_x", type=int, default=480)
+  pad ("-wy", "--window_y", type=int, default=380)
+  pad ("-wxrand", "--window_x_random", type=int, default=220)
+  pad ("-wyrand", "--window_y_random", type=int, default=160)
+  pad ("-center", action="store_true")
   pad ("-ww", "--wrapwidth", type=int, default=75)
   pad ("-wpm1", "--lowerwpm", type=float, default=12.5)
   pad ("-wpm2", "--upperwpm", type=float, default=80)
@@ -475,6 +482,14 @@ def load_json_files (self):
   infolines_hr (self)
 
 def init (self):
+  if not args.center:
+    x = args.window_x 
+    x = x + random.randint (0,2*args.window_x_random) - args.window_x_random
+    y = args.window_y 
+    y = y + random.randint (0,2*args.window_y_random) - args.window_y_random
+    pos_str = f"{x},{y}"
+    print (pos_str)
+    os.environ['SDL_VIDEO_WINDOW_POS'] = pos_str
   pygame.init ()
   pygame.mouse.set_visible (args.showmouse)
   init_vars (self)
