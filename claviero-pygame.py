@@ -488,10 +488,10 @@ def init (self):
     y = args.window_y 
     y = y + random.randint (0,2*args.window_y_random) - args.window_y_random
     pos_str = f"{x},{y}"
-    print (pos_str)
+    # print (pos_str)
     os.environ['SDL_VIDEO_WINDOW_POS'] = pos_str
   pygame.init ()
-  pygame.mouse.set_visible (args.showmouse)
+  # pygame.mouse.set_visible (args.showmouse)
   init_vars (self)
   load_json_files (self)
   pygame.display.set_caption ("Claviero-pygame")
@@ -512,6 +512,8 @@ def init (self):
     args.hugefontsize)
   self.insectfont = pygame.font.Font (args.insectfont,
     args.insectfontsize)
+  self.mousex,self.mousey = pygame.mouse.get_pos ()
+  self.mouseFocus = pygame.mouse.get_focused ()
   img = self.writesamplefont.render (100*"x",True,om ("white"))
   self.charw = img.get_width() // 100
   draw_images (self)
@@ -668,6 +670,8 @@ def infolines_add_scores (self):
   infolines_hr (self)
 
 def handle_key_press (self, event):
+  if not args.showmouse:  
+    pygame.mouse.set_visible (False)
   hw2 = event.scancode
   key = event.key
   keyname = event.unicode
@@ -737,6 +741,11 @@ def handle_key_press (self, event):
     self.current = ""
 
 def take_timeout (self):
+  mousex,mousey = pygame.mouse.get_pos ()
+  self.mouseFocus = pygame.mouse.get_focused ()
+  if mousex != self.mousex or mousey != self.mousey:
+    pygame.mouse.set_visible (True)
+    self.mousex,self.mousey = pygame.mouse.get_pos ()
   now = time.time()
   wpm1 = wpm (len (self.keys) / 2)
   ers = 100 * len(self.ers) / max (1,len(self.keys))
